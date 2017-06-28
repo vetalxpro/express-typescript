@@ -1,0 +1,12 @@
+{
+  "ignore": [
+    "api-doc",
+    "node_modules"
+  ],
+  "execMap": {
+    "ts": "ts-node"
+  },
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

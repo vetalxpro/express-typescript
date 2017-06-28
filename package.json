@@ -1,0 +1,48 @@
+{
+  "name": "express-typescript",
+  "version": "1.0.0",
+  "description": "express with typescript boilerplate",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --timeout 15000 --compilers ts:ts-node/register --require test/env.ts **/*.spec.ts",
+    "start": "ts-node index.ts",
+    "start-watch": "nodemon index.ts"
+  },
+  "author": "vetalxpro",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bluebird": "^3.5.8",
+    "@types/body-parser": "^1.16.4",
+    "@types/chai": "^4.0.1",
+    "@types/chai-http": "0.0.30",
+    "@types/cors": "^2.8.1",
+    "@types/express": "^4.0.36",
+    "@types/helmet": "0.0.35",
+    "@types/lodash": "^4.14.67",
+    "@types/mocha": "^2.2.41",
+    "@types/mongoose": "^4.7.18",
+    "@types/morgan": "^1.7.32",
+    "@types/node": "^8.0.3",
+    "@types/winston": "^2.3.3",
+    "chai": "^4.0.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.4.2",
+    "nodemon": "^1.11.0",
+    "ts-node": "^3.1.0",
+    "tslint": "^5.4.3",
+    "typescript": "^2.3.4"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.3",
+    "express": "^4.15.3",
+    "helmet": "^3.6.1",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.11.0",
+    "morgan": "^1.8.2",
+    "pug": "^2.0.0-rc.2",
+    "swagger-ui-dist": "^3.0.17",
+    "winston": "^2.3.1"
+  }
+}

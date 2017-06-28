@@ -1,0 +1,63 @@
+{
+  "extends": [
+    "tslint:recommended"
+  ],
+  "rules": {
+    // Custom
+    "no-empty": false,
+    "no-angle-bracket-type-assertion": false,
+    "typedef-whitespace": false,
+    "whitespace": false,
+    "prefer-const": true,
+    "jsdoc-format": false,
+    "object-literal-shorthand": false,
+    "member-access": false,
+//    "member-ordering": false,
+    "no-consecutive-blank-lines": [
+      true,
+      2
+    ],
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
+    "trailing-comma": [
+      false,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ],
+    "interface-name": [
+      "always-prefix"
+    ],
+    // General
+    "no-console": [
+      true,
+      "time",
+      "timeEnd",
+      "trace"
+    ],
+    "max-line-length": [
+      true,
+      180
+    ],
+    "no-string-literal": false,
+    "no-use-before-declare": true,
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+    "variable-name": [
+      true,
+      "allow-leading-underscore",
+      "allow-trailing-underscore",
+      "allow-pascal-case",
+      "ban-keywords",
+      "check-format"
+    ]
+  }
+}
