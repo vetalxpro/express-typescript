@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { deleteUserById, getUserById, getUsers, loginUser, registerUser, putUser } from './controllers';
-import { checkObjectId } from '../../../middleware';
+import { checkObjectId, passportJwtAuth } from '../../../middleware';
 
 
 class UsersApi {
@@ -17,7 +17,7 @@ class UsersApi {
     this.router.post('/users/login', loginUser);
 
     this.router.route('/users/:id')
-      .get(checkObjectId, getUserById)
+      .get(passportJwtAuth, checkObjectId, getUserById)
       .put(checkObjectId, putUser)
       .delete(checkObjectId, deleteUserById);
 

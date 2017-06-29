@@ -3,7 +3,7 @@ import { authenticate } from 'passport';
 import { HttpError } from '../libs';
 
 export const passportJwtAuth = ( req: Request, res: Response, next ) => {
-  authenticate('jwt', ( err, user, info ) => {
+  authenticate('jwt', { session: false }, ( err, user, info ) => {
     if ( err ) {
       return next(err);
     }

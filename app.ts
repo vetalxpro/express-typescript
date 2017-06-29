@@ -40,7 +40,7 @@ export class ExpressApp {
     this.app.use(simpleLogger);
     this.app.use(helmet(config.helmetOptions));
     this.app.use(passport.initialize());
-    // this.app.use(passport.session());
+    this.app.use(passport.session());
     this.app.use('/api-docs', express.static(join(__dirname, './api-docs')));
     this.app.use('/swagger-ui', express.static(swaggerUiPath()));
     this.app.use(express.static(join(__dirname, './public')));

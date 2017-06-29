@@ -1,22 +1,28 @@
 import { User } from '../db/models';
-const { Strategy } = require('passport-local');
+import { Strategy, IStrategyOptions } from 'passport-local';
 
-export const localStrategy = new Strategy({
-    usernameField: 'email',
-    passwordField: 'password'
-  }, ( email, password, done ) => {
+
+const localStrategyOptions: IStrategyOptions = {
+  usernameField: 'email',
+  passwordField: 'password'
+};
+
+export const localStrategy = new Strategy(localStrategyOptions, ( email, password, done ) => {
     User.findByEmail(email)
       .select('+password')
       .then(( user ) => {
         if ( !user ) {
-          return done(null, false, { message: 'User not found' });
+          done(null, false, { message: 'User not found' });
+          return null;
         }
         return User.checkPassword(password, user.local.password)
           .then(( isMatch ) => {
             if ( !isMatch ) {
-              return done(null, false, { message: 'Invalid password' });
+              done(null, false, { message: 'Invalid password' });
+              return null;
             }
-            return done(null, user);
+            done(null, user);
+            return null;
           });
       })
       .catch(done);

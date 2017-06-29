@@ -1,22 +1,23 @@
+import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { config } from '../../config';
 import { User } from '../db/models';
 
-const { ExtractJwt, Strategy } = require('passport-jwt');
 
-
-const passportJwtConfig = {
+const passportJwtConfig: StrategyOptions = {
   secretOrKey: config.jwt.secret,
   jwtFromRequest: ExtractJwt.fromAuthHeader()
 };
 
-export const jwtStrategy = new Strategy(passportJwtConfig, ( jwt_payload, done ) => {
-  User.findById(jwt_payload._id)
+export const jwtStrategy = new Strategy(passportJwtConfig, ( jwtToken, done ) => {
+  User.findById(jwtToken._id)
     .select('+role')
     .then(( user ) => {
       if ( !user ) {
-        return done(null, false, { message: 'User not found' });
+        done(null, false, { message: 'User not found' });
+        return null;
       }
-      return done(null, user);
+      done(null, user);
+      return null;
     })
     .catch(done);
 });

@@ -6,7 +6,7 @@ import { config } from '../../../../config';
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-const url = `${config.server.apiPath}/users/12`;
+const url = `${config.server.apiPath}/users`;
 
 describe('GET /users', () => {
 
