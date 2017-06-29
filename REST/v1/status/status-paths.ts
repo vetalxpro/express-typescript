@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { statusGet } from './controllers';
+import { getStatus } from './controllers';
 
 
 class StatusApi {
@@ -12,7 +12,7 @@ class StatusApi {
 
   private initRoutes() {
     this.router.route('/status')
-      .get(statusGet);
+      .get(getStatus);
   }
 }
 

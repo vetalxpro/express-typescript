@@ -1,6 +1,9 @@
+import * as Bluebird from 'bluebird';
 import { AppServer } from './libs';
-import { app } from './app';
-import { db } from './libs/db';
+import { ExpressApp } from './app';
+import { Db, WebSocketApp } from './libs';
 
-const appServer = new AppServer(app, db);
+global.Promise = Bluebird;
+
+export const appServer = new AppServer(new ExpressApp(), new Db(), new WebSocketApp());
 appServer.start();

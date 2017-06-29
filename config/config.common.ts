@@ -1,22 +1,30 @@
-const config: any = {
+const port = process.env.PORT || 3000;
+const host = 'localhost';
+const apiPath = '/api/v1';
+
+const config = {
   env: process.env.NODE_ENV || 'development',
   server: {
-    port: process.env.PORT || 3000,
-    host: 'localhost',
-    apiPath: '/api/v1'
+    port: port,
+    host: host,
+    apiPath: apiPath,
+    callbackUrl: `${host}:${port}`,
+    clientUrl: `${host}:4200` // angular 2 webpack-dev-server (example)
   },
   mongoose: {
     host: 'mongodb://localhost/somebase',
-    options: {}
+    options: {
+      useMongoClient: false
+    }
   },
   jwt: {
-    secret: process.env.JWT_SECRET,
+    secret: process.env.JWT_SECRET || 'secret',
     options: {
       expiresIn: 7 * 24 * 60 * 60 * 1000
     }
   },
   sessionOptions: {
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -54,24 +62,23 @@ const config: any = {
   },
   corsOptions: {
     maxAge: 600 // sec,
+  },
+  passport: {
+    googleAuthOptions: {
+      clientID: 'CLIENT_ID',
+      clientSecret: 'CLIENT_SECRET',
+      callbackURL: `${host}:${port}:${apiPath}/users/login/google/callback`
+    },
+    facebookAuthOptions: {
+      clientID: 'CLIENT_ID',
+      clientSecret: 'CLIENT_SECRET',
+      callbackURL: `${host}:${port}:${apiPath}/users/login/facebook/callback`
+    },
+    twitterAuthOptions: {}
+  },
+  socket: {
+    enable: true
   }
-};
-
-config.server.callbackUrl = `${config.server.host}:${config.server.port}`;
-config.server.clientUrl = `${config.server.host}:4200`; // example angular2 dev server
-
-config.passport = {
-  googleAuthOptions: {
-    clientID: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
-    callbackURL: `${config.server.callbackUrl + config.server.apiRoute}/users/login/google/callback`
-  },
-  facebookAuthOptions: {
-    clientID: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
-    callbackURL: `${config.server.callbackUrl + config.server.apiRoute}/users/login/facebook/callback`
-  },
-  twitterAuthOptions: {}
 };
 
 export { config as configCommon };

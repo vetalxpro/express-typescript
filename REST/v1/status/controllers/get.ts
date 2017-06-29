@@ -1,6 +1,13 @@
 import { Request, Response } from 'express';
 
-export const statusGet = ( req: Request, res: Response ) => {
+
+/**
+ *
+ * @param req
+ * @param res
+ * @returns {Response}
+ */
+export const getStatus = ( req: Request, res: Response ) => {
   const time = new Date();
 
   return res.json({

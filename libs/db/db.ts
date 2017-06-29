@@ -1,22 +1,21 @@
 import * as mongoose from 'mongoose';
-import * as bluebird from 'bluebird';
-import { merge } from 'lodash';
 import { config } from '../../config';
+import { User } from './models';
 
+
+export { mongoose };
 
 export class Db {
+
+  public static get User() {
+    return User;
+  }
+
   public connection = mongoose.connection;
 
   public init() {
-    mongoose.connect(config.mongoose.host, this.makeOptions());
+    (mongoose as any).Promise = global.Promise;
+    mongoose.connect(config.mongoose.host, config.mongoose.options);
   }
 
-  private makeOptions(): mongoose.ConnectionOptions {
-    const options: mongoose.ConnectionOptions = {
-      promiseLibrary: bluebird
-    };
-    return merge(config.mongoose.options, options);
-  }
 }
-
-export const db = new Db();

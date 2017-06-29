@@ -52,9 +52,11 @@
             }
           }
         }
-      },
+      }
+    },
+    "/users/registration": {
       "post": {
-        "summary": "Create a new users",
+        "summary": "Create a new user",
         "operationId": "createUser",
         "tags": [
           "users"
@@ -64,6 +66,40 @@
         "parameters": [
           {
             "in": "body",
+            "name": "body",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "login user",
+        "operationId": "loginUser",
+        "tags": [
+          "users"
+        ],
+        "security": [
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": "true",
             "schema": {
               "$ref": "#/definitions/User"
             }
@@ -109,6 +145,76 @@
             "$ref": "#/responses/NotFound"
           }
         }
+      },
+      "put": {
+        "summary": "Update user by id",
+        "operationId": "updateUserById",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "user id",
+            "required": "true",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": "true",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user by id",
+        "operationId": "deleteUserById",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "user id",
+            "required": "true",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                }
+              },
+              "example": {
+                "status": "OK"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          }
+        }
       }
     },
     "/status": {
@@ -132,13 +238,33 @@
     "NotFound": {
       "description": "Resource was not found",
       "schema": {
-        "$ref": "#/definitions/Error"
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "status": 404,
+          "message": "Not Found"
+        }
       }
     },
     "Unauthorized": {
       "description": "Unauthorized",
       "schema": {
-        "$ref": "#/definitions/Error"
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
       },
       "headers": {
         "Authorization": {
@@ -160,7 +286,6 @@
   "definitions": {
     "User": {
       "required": [
-        "username",
         "email",
         "password"
       ],
@@ -197,13 +322,6 @@
           "type": "string"
         },
         "currentTime": {
-          "type": "string"
-        }
-      }
-    },
-    "Error": {
-      "properties": {
-        "message": {
           "type": "string"
         }
       }

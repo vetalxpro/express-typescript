@@ -1,23 +1,25 @@
-export const config: any = {
+const port = process.env.PORT || 3000;
+const host = 'example.com';
+const apiPath = '/api/v1';
+
+const config = {
   env: 'production',
   server: {
-    host: 'http://example.com',
-    apiPath: '/api/v1'
+    port: port,
+    host: host,
+    callbackUrl: `${host}`,
+    clientUrl: `${host}`
   },
-  mailer: {}
+  passport: {
+    googleAuthOptions: {
+      callbackURL: `${host}${apiPath}/users/login/google/callback`
+    },
+    facebookAuthOptions: {
+      callbackURL: `${host}${apiPath}/users/login/facebook/callback`
+    },
+    twitterAuthOptions: {}
+  }
 };
 
-config.server.callbackUrl = `${config.server.host}`;
-config.server.clientUrl = `${config.server.host}`;
-
-config.passport = {
-  googleAuthOptions: {
-    callbackURL: `${config.server.host + config.server.apiRoute}/users/login/google/callback`
-  },
-  facebookAuthOptions: {
-    callbackURL: `${config.server.host + config.server.apiRoute}/users/login/facebook/callback`
-  },
-  twitterAuthOptions: {}
-};
 
 export { config as configProduction };

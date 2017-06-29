@@ -12,7 +12,8 @@
     "jsdoc-format": false,
     "object-literal-shorthand": false,
     "member-access": false,
-//    "member-ordering": false,
+    "no-unused-expression": false,
+    "no-var-requires": false,
     "no-consecutive-blank-lines": [
       true,
       2
@@ -56,6 +57,7 @@
       "allow-leading-underscore",
       "allow-trailing-underscore",
       "allow-pascal-case",
+      "allow-snake-case",
       "ban-keywords",
       "check-format"
     ]

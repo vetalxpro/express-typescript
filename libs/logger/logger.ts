@@ -3,16 +3,13 @@ import { join } from 'path';
 import { config } from '../../config';
 
 
-const env = config.env;
-
 const logger: LoggerInstance = new Logger();
-
 
 logger.configure({
   exitOnError: false,
   transports: [
     new transports.Console({
-      level: env === 'test' ? 'error' : 'silly',
+      level: config.env === 'test' ? 'error' : 'silly',
       colorize: 'all',
       handleExceptions: true,
       humanReadableUnhandledException: true
@@ -21,7 +18,7 @@ logger.configure({
       name: 'info-file',
       handleExceptions: false,
       filename: join(process.cwd(), './logs/info.log'),
-      level: env === 'test' ? 'error' : 'info'
+      level: config.env === 'test' ? 'error' : 'info'
     }),
     new transports.File({
       name: 'error-file',

@@ -5,16 +5,16 @@ import { json, urlencoded } from 'body-parser';
 import * as morgan from 'morgan';
 import * as helmet from 'helmet';
 
-import { logger } from './libs';
+import { logger, passport } from './libs';
 import { pagesRouter } from './routes';
 import { config } from './config';
 import * as swaggerUiPath from 'swagger-ui-dist/absolute-path';
-import { simpleLogger, urlNotFound } from './middlewares';
-import { usersApi, statusApi } from './REST/api/v1';
+import { simpleLogger, urlNotFound } from './middleware';
+import { usersApi, statusApi } from './REST/v1';
 
 
-class App {
-  private app: express.Application;
+export class ExpressApp {
+  public app: express.Application;
 
   constructor() {
     this.app = express();
@@ -39,6 +39,8 @@ class App {
     this.app.use(morgan('dev'));
     this.app.use(simpleLogger);
     this.app.use(helmet(config.helmetOptions));
+    this.app.use(passport.initialize());
+    // this.app.use(passport.session());
     this.app.use('/api-docs', express.static(join(__dirname, './api-docs')));
     this.app.use('/swagger-ui', express.static(swaggerUiPath()));
     this.app.use(express.static(join(__dirname, './public')));
@@ -63,9 +65,11 @@ class App {
 
       res.locals.message = err.message;
       res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+      if ( err.name === 'ValidationError' ) {
+        err.status = 400;
+      }
       res.status(err.status || 500);
-      if ( err.status !== 404 ) {
+      if ( err.status !== 404 && err.status !== 400 ) {
         logger.error(err);
       }
       if ( /application\/json/.test(req.header('accept')) ) {
@@ -78,10 +82,5 @@ class App {
       return res.render('error');
     });
 
-
   }
 }
-
-const app = new App().init();
-
-export { app };
