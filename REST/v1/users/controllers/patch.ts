@@ -9,16 +9,20 @@ import { User } from '../../../../libs/db/models';
  * @param res
  * @param next
  */
-export const deleteById = ( req: Request, res: Response, next ) => {
+export const updateById = ( req: Request, res: Response, next ) => {
   const id = req.params.id;
-  User.removeById(id)
+  const updatedUser = {
+    local: {
+      username: req.body.username
+    }
+  };
+
+  User.updateById(id, updatedUser)
     .then(( user ) => {
       if ( !user ) {
         return next(new HttpError(404, 'User not found'));
       }
-      return res.status(200).json({
-        status: 'OK'
-      });
+      return res.status(200).json(user);
     })
     .catch(next);
 };

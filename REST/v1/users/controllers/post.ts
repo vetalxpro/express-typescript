@@ -12,7 +12,7 @@ import { config } from '../../../../config';
  * @param res
  * @param next
  */
-export const registerUser = ( req: Request, res: Response, next ) => {
+export const register = ( req: Request, res: Response, next ) => {
   const newUser = {
     local: {
       username: req.body.username,
@@ -35,7 +35,7 @@ export const registerUser = ( req: Request, res: Response, next ) => {
  * @param next
  * @returns {any}
  */
-export const loginUser = ( req: Request, res: Response, next ) => {
+export const login = ( req: Request, res: Response, next ) => {
   const { email, password } = req.body;
   if ( !email || !password ) {
     return next(new HttpError(400, 'Empty email or password'));

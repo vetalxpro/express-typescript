@@ -146,7 +146,7 @@
           }
         }
       },
-      "put": {
+      "patch": {
         "summary": "Update user by id",
         "operationId": "updateUserById",
         "tags": [

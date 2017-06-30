@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { deleteUserById, getUserById, getUsers, loginUser, registerUser, putUser } from './controllers';
+import { deleteById, getById, getAll, login, register, updateById } from './controllers';
 import { checkObjectId, passportJwtAuth } from '../../../middleware';
 
 
@@ -12,14 +12,14 @@ class UsersApi {
   }
 
   private initRoutes() {
-    this.router.get('/users', getUsers);
-    this.router.post('/users/registration', registerUser);
-    this.router.post('/users/login', loginUser);
+    this.router.get('/users', getAll);
+    this.router.post('/users/registration', register);
+    this.router.post('/users/login', login);
 
     this.router.route('/users/:id')
-      .get(passportJwtAuth, checkObjectId, getUserById)
-      .put(checkObjectId, putUser)
-      .delete(checkObjectId, deleteUserById);
+      .get(passportJwtAuth, checkObjectId, getById)
+      .patch(checkObjectId, updateById)
+      .delete(checkObjectId, deleteById);
 
   }
 }

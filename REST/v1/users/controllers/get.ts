@@ -9,15 +9,15 @@ import { User } from '../../../../libs/db/models';
  * @param res
  * @param next
  */
-export const getUsers = ( req: Request, res: Response, next ) => {
-  User.getUsers()
+export const getAll = ( req: Request, res: Response, next ) => {
+  User.findAll()
     .then(( users ) => {
       res.json(users);
     })
     .catch(next);
 };
 
-export const getUserById = ( req: Request, res: Response, next ) => {
+export const getById = ( req: Request, res: Response, next ) => {
   const id = req.params.id;
   // console.log(req);
   User.findById(id)

@@ -9,7 +9,7 @@ import { User } from '../../../../libs/db/models';
  * @param res
  * @param next
  */
-export const putUser = ( req: Request, res: Response, next ) => {
+export const replaceById = ( req: Request, res: Response, next ) => {
   const id = req.params.id;
   const updatedUser = {
     local: {
@@ -17,7 +17,7 @@ export const putUser = ( req: Request, res: Response, next ) => {
     }
   };
 
-  User.updateById(id, updatedUser)
+  User.replaceById(id, updatedUser)
     .then(( user ) => {
       if ( !user ) {
         return next(new HttpError(404, 'User not found'));

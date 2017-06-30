@@ -1,4 +1,4 @@
-import { mongoose } from '../db';
+import * as mongoose from 'mongoose';
 import { Schema, Document } from 'mongoose';
 import { hash, compare } from 'bcrypt';
 
@@ -75,7 +75,7 @@ const userSchema: Schema = new Schema(
 export class User {
   public static model = mongoose.model<IUserDocument>('User', userSchema);
 
-  public static getUsers() {
+  public static findAll() {
     return User.model.find();
   }
 
@@ -96,6 +96,10 @@ export class User {
   }
 
   public static updateById( id: string, update: IUser ) {
+    return User.model.findByIdAndUpdate(id, update, { new: true });
+  }
+
+  public static replaceById( id: string, update: IUser ) {
     return User.model.findByIdAndUpdate(id, update, { new: true });
   }
 
