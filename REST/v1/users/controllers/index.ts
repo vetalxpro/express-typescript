@@ -3,3 +3,4 @@ export * from './post';
 export * from './put';
 export * from './delete';
 export * from './patch';
+export * from './auth-callbacks';

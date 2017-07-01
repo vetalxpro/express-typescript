@@ -2,26 +2,34 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { join } from 'path';
 import { json, urlencoded } from 'body-parser';
+import { merge } from 'lodash';
 import * as morgan from 'morgan';
 import * as helmet from 'helmet';
+import * as session from 'express-session';
+import * as connectMongo from 'connect-mongo';
 
 import { logger, passport } from './libs';
 import { pagesRouter } from './routes';
 import { config } from './config';
-import * as swaggerUiPath from 'swagger-ui-dist/absolute-path';
 import { simpleLogger, urlNotFound } from './middleware';
 import { usersApi, statusApi } from './REST/v1';
+import { Db } from './libs/db';
 
+
+const MongoStore: connectMongo.MongoStoreFactory = connectMongo(session);
 
 export class ExpressApp {
   public app: express.Application;
+  public db: Db;
 
-  constructor() {
+  constructor( db: Db ) {
+    this.db = db;
     this.app = express();
   }
 
   public init() {
     this.config();
+    this.db.init();
     this.initMiddlewares();
     this.initApi();
     this.initRoutes();
@@ -39,10 +47,11 @@ export class ExpressApp {
     this.app.use(morgan('dev'));
     this.app.use(simpleLogger);
     this.app.use(helmet(config.helmetOptions));
+    this.app.use(session(merge(true, config.sessionOptions, {
+      store: new MongoStore({ mongooseConnection: this.db.connection })
+    })));
     this.app.use(passport.initialize());
     this.app.use(passport.session());
-    this.app.use('/api-docs', express.static(join(__dirname, './api-docs')));
-    this.app.use('/swagger-ui', express.static(swaggerUiPath()));
     this.app.use(express.static(join(__dirname, './public')));
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
@@ -69,7 +78,9 @@ export class ExpressApp {
         err.status = 400;
       }
       res.status(err.status || 500);
-      if ( err.status !== 404 && err.status !== 400 ) {
+      if ( err.status !== 500 ) {
+        logger.error(err.status, err.message);
+      } else {
         logger.error(err);
       }
       if ( /application\/json/.test(req.header('accept')) ) {

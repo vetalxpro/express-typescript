@@ -1,15 +1,14 @@
 import { User } from '../db/models';
+import { IStrategyOptions, Strategy } from 'passport-vkontakte';
 import { config } from '../../config';
 
-import { OAuth2Strategy, IOAuth2StrategyOption } from 'passport-google-oauth';
+const strategyOptions: IStrategyOptions = config.passport.vkontakteAuthOptions;
 
-const strategyOptions: IOAuth2StrategyOption = config.passport.googleAuthOptions;
-
-export const googleStrategy = new OAuth2Strategy(strategyOptions, ( accessToken, refreshToken, profile, done ) => {
-    User.findOrCreate({ 'google.id': profile.id },
+export const vkontakteStrategy = new Strategy(strategyOptions, ( accessToken, refreshToken, profile, done ) => {
+    User.findOrCreate({ 'vkontakte.id': profile.id },
       {
         username: profile.displayName,
-        google: {
+        vkontakte: {
           id: profile.id,
           accessToken: accessToken,
           displayName: profile.displayName

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { deleteById, getById, getAll, login, register, updateById } from './controllers';
-import { checkObjectId, passportJwtAuth } from '../../../middleware';
+import { urlNotFound } from '../../../middleware';
+import * as controllers from './controllers';
 
 
 class UsersApi {
@@ -12,14 +12,33 @@ class UsersApi {
   }
 
   private initRoutes() {
-    this.router.get('/users', getAll);
-    this.router.post('/users/registration', register);
-    this.router.post('/users/login', login);
+    this.router.get('/users', controllers.getAll());
+
+    this.router.route('/users/registration')
+      .post(controllers.localRegister())
+      .all(urlNotFound);
+
+    this.router.route('/users/login')
+      .post(controllers.localLogin())
+      .all(urlNotFound);
+
+    this.router.route('/users/profile')
+      .get(controllers.getProfile())
+      .all(urlNotFound);
+
+    this.router.get('/users/auth/google', controllers.authGoogle());
+    this.router.get('/users/auth/facebook', controllers.authFacebook());
+    this.router.get('/users/auth/twitter', controllers.authTwitter());
+    this.router.get('/users/auth/vkontakte', controllers.authVkontakte());
+    this.router.get('/users/auth/google/callback', controllers.authGoogleCallback());
+    this.router.get('/users/auth/facebook/callback', controllers.authFacebookCallback());
+    this.router.get('/users/auth/twitter/callback', controllers.authTwitterCallback());
+    this.router.get('/users/auth/vkontakte/callback', controllers.authVkontakteCallback());
 
     this.router.route('/users/:id')
-      .get(passportJwtAuth, checkObjectId, getById)
-      .patch(checkObjectId, updateById)
-      .delete(checkObjectId, deleteById);
+      .get(controllers.getById())
+      .patch(controllers.updateById())
+      .delete(controllers.deleteById());
 
   }
 }

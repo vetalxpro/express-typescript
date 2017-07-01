@@ -1,49 +1,70 @@
-import * as mongoose from 'mongoose';
-import { Schema, Document } from 'mongoose';
+import { Schema, Document, model } from 'mongoose';
 import { hash, compare } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
+import * as Bluebird from 'bluebird';
+import { config } from '../../../config';
+
 
 export interface IUser {
   _id?: string;
-  local?: {
-    username?: string;
-    email?: string;
-    password?: string;
-  };
+  username?: string;
+  email?: string;
+  password?: string;
   role?: string[];
   google?: {
     id?: string,
-    token?: string,
-    name?: string,
+    accessToken?: string,
+    displayName?: string,
+    email?: string,
+    photo?: string
+  };
+  facebook?: {
+    id?: string,
+    accessToken?: string,
+    displayName?: string,
     email?: string
+  };
+  twitter?: {
+    id?: string,
+    accessToken?: string,
+    displayName?: string,
+    email?: string,
+    photo?: string
+  };
+  vkontakte?: {
+    id?: string,
+    accessToken?: string,
+    displayName?: string,
   };
   updatedAt?: Date;
   createdAt?: Date;
 }
 
-export interface IUserDocument extends IUser, Document {
+interface IUserDocument extends IUser, Document {
   _id: string;
 }
 
 const userSchema: Schema = new Schema(
   {
-    local: {
-      username: {
-        type: String,
-        default: null
-      },
-      email: {
-        type: String,
-        unique: true
-      },
-      password: {
-        type: String,
-        default: null,
-        select: false
-      },
-      confirmed: {
-        type: Boolean,
-        default: false
-      }
+    username: {
+      type: String,
+      default: null
+    },
+    email: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      default: null
+    },
+    password: {
+      type: String,
+      select: false,
+      trim: true,
+      minlength: 6
+    },
+    confirmed: {
+      type: Boolean,
+      default: false
     },
     role: {
       type: [ String ],
@@ -51,68 +72,106 @@ const userSchema: Schema = new Schema(
       select: false
     },
     google: {
-      id: {
-        type: String,
-        default: null
-      },
-      token: {
-        type: String,
-        default: null
-      },
-      email: {
-        type: String,
-        default: null
-      },
-      name: {
-        type: String,
-        default: null
-      }
+      id: String,
+      accessToken: String,
+      displayName: String
+    },
+    facebook: {
+      id: String,
+      accessToken: String,
+      displayName: String
+    },
+    twitter: {
+      id: String,
+      accessToken: String,
+      displayName: String
+    },
+    vkontakte: {
+      id: String,
+      accessToken: String,
+      displayName: String
     }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
+userSchema.pre('save', function( next ) {
+  const user = this as IUserDocument;
+  if ( !user.password ) {
+    return next();
+  }
+  hash(user.password, 10)
+    .then(( hash ) => {
+      user.password = hash;
+      return next();
+    })
+    .catch(next);
+});
+
+const UserModel = model<IUserDocument>('User', userSchema);
+
 export class User {
-  public static model = mongoose.model<IUserDocument>('User', userSchema);
 
   public static findAll() {
-    return User.model.find();
+    return UserModel.find();
   }
 
   public static createUser( user: IUser ) {
-    return hash(user.local.password, 10)
-      .then(( hash ) => {
-        user.local.password = hash;
-        return User.model.create(user);
-      });
+    return new UserModel(user).save();
   }
 
   public static findById( id: string ) {
-    return User.model.findById(id);
+    return UserModel.findById(id);
   }
 
   public static findByEmail( email: string ) {
-    return User.model.findOne({ 'local.email': email });
+    return UserModel.findOne({ email });
   }
 
   public static updateById( id: string, update: IUser ) {
-    return User.model.findByIdAndUpdate(id, update, { new: true });
+    return UserModel.findByIdAndUpdate(id, update, { new: true });
   }
 
   public static replaceById( id: string, update: IUser ) {
-    return User.model.findByIdAndUpdate(id, update, { new: true });
+    return UserModel.findByIdAndUpdate(id, update, { new: true });
   }
 
   public static removeById( id: string ) {
-    return User.model.findByIdAndRemove(id);
+    return UserModel.findByIdAndRemove(id);
   }
 
   public static checkPassword( plain: string, hash: string ): Promise<boolean> {
     return compare(plain, hash);
   }
 
-  public static updateOrCreate( query: IUser | any, update: IUser | any ) {
-    return User.model.findOneAndUpdate(query, update, { upsert: true, new: true });
+  public static findOrCreate( query: IUser | any, update: IUser ) {
+    return UserModel.findOne(query)
+      .then(( user ) => {
+        if ( user ) {
+          return user;
+        }
+        return new UserModel(update).save();
+      });
+  }
+
+  public static generateJwt( user: IUser ): Bluebird<string> {
+    return Bluebird.fromCallback(( callback ) => {
+      return sign({ id: user._id }, config.jwt.secret, config.jwt.options, callback);
+    });
+  }
+
+  private user: IUserDocument;
+
+  constructor( user: IUser ) {
+    this.user = new UserModel(user);
+  }
+
+  public get document() {
+    return this.user;
   }
 
 }
+
+export const defaultUserPickFields = [ 'username', 'email' ];

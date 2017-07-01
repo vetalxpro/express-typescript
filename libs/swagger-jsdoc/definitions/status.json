@@ -1,0 +1,16 @@
+{
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "started": {
+      "type": "string"
+    },
+    "uptime": {
+      "type": "string"
+    },
+    "currentTime": {
+      "type": "string"
+    }
+  }
+}

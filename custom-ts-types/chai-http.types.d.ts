@@ -1,5 +1,4 @@
 declare namespace ChaiHttp {
-
   interface Response {
     text: string;
     headers: any;

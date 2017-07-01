@@ -1,5 +1,5 @@
 const port = process.env.PORT || 3000;
-const host = 'localhost';
+const host = `http://localhost`;
 const apiPath = '/api/v1';
 
 const config = {
@@ -65,16 +65,25 @@ const config = {
   },
   passport: {
     googleAuthOptions: {
-      clientID: 'CLIENT_ID',
-      clientSecret: 'CLIENT_SECRET',
-      callbackURL: `${host}:${port}:${apiPath}/users/login/google/callback`
+      clientID: '441428006509-34qjiv949e9f9h5bmbueuleqchjvto6m.apps.googleusercontent.com',
+      clientSecret: 'zgyIIPOkxtrgUGObwkt94Bc_',
+      callbackURL: `${host}:${port}${apiPath}/users/auth/google/callback`
     },
     facebookAuthOptions: {
-      clientID: 'CLIENT_ID',
-      clientSecret: 'CLIENT_SECRET',
-      callbackURL: `${host}:${port}:${apiPath}/users/login/facebook/callback`
+      clientID: '393451751013103',
+      clientSecret: 'cd441f83eb3c78a7cc2068ca3e6429ef',
+      callbackURL: `${host}:${port}${apiPath}/users/auth/facebook/callback`
     },
-    twitterAuthOptions: {}
+    twitterAuthOptions: {
+      consumerKey: 'GQoeDIBuVHbYMpiA7llKsfnff',
+      consumerSecret: 'eNIo2euFs81Mv1cQTaEnS468E8s7wHYuFjPOwFBL3mhrWaypMB',
+      callbackURL: `${host}:${port}${apiPath}/users/auth/twitter/callback`
+    },
+    vkontakteAuthOptions: {
+      clientID: '6096996',
+      clientSecret: 'cDb8sX3nMnqpZ5Ll0l9P',
+      callbackURL: `${host}:${port}${apiPath}/users/auth/vkontakte/callback`
+    }
   },
   socket: {
     enable: true

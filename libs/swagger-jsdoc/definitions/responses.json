@@ -1,0 +1,39 @@
+{
+  "NotFound": {
+    "description": "Resource was not found",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "number"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "status": 404,
+        "message": "Not Found"
+      }
+    }
+  },
+  "Unauthorized": {
+    "description": "Unauthorized",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "number"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "headers": {
+      "Authorization": {
+        "type": "string"
+      }
+    }
+  }
+}

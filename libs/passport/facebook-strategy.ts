@@ -1,20 +1,23 @@
-import { User } from '../db/models';
+import { IStrategyOption, Strategy } from 'passport-facebook';
 import { config } from '../../config';
+import { User } from '../db/models';
 
-const { Strategy } = require('passport-facebook');
 
-export const facebookStrategy = new Strategy(
-  config.passport.facebookAuthOptions,
-  ( accessToken, refreshToken, profile, cb ) => {
-    User.updateOrCreate(
-      { 'facebook.id': profile.id },
+const strategyOptions: IStrategyOption = config.passport.facebookAuthOptions;
+
+export const facebookStrategy = new Strategy(strategyOptions, ( accessToken, refreshToken, profile, cb ) => {
+    User.findOrCreate({ 'facebook.id': profile.id },
       {
-        'facebook.token': accessToken,
-        'facebook.name': profile.displayName
-        // 'facebook.email': profile.emails[0].value
+        username: profile.displayName,
+        facebook: {
+          id: profile.id,
+          accessToken: accessToken,
+          displayName: profile.displayName
+        }
       })
       .then(( user ) => {
         cb(null, user);
+        return null;
       })
       .catch(cb);
   }

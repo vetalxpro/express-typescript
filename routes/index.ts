@@ -1,5 +1,8 @@
+import * as express from 'express';
 import { Router } from 'express';
-import { homePath, dashboardPath } from './pages';
+import { join } from 'path';
+import { apiSpecPath, swaggerUiDistPath } from './api-docs';
+import { dashboardPath, homePath } from './pages';
 
 
 class PagesRouter {
@@ -13,6 +16,9 @@ class PagesRouter {
   private initRoutes() {
     this.router.get('/', homePath);
     this.router.get('/dashboard', dashboardPath);
+    this.router.use('/api-docs', express.static(join(__dirname, '../api-docs')));
+    this.router.use('/api-docs', express.static(swaggerUiDistPath()));
+    this.router.get('/api-docs/swagger.json', apiSpecPath);
   }
 }
 

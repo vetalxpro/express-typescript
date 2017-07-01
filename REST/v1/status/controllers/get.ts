@@ -2,10 +2,19 @@ import { Request, Response } from 'express';
 
 
 /**
- *
- * @param req
- * @param res
- * @returns {Response}
+ * @swagger
+ * /status:
+ *   get:
+ *     description: Returns servers status
+ *     tags:
+ *     - status
+ *     produces:
+ *     - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         schema:
+ *           $ref: '#/definitions/Status'
  */
 export const getStatus = ( req: Request, res: Response ) => {
   const time = new Date();

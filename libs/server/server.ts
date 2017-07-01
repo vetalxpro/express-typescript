@@ -1,7 +1,6 @@
 import { createServer, Server } from 'http';
 import { config } from '../../config';
 import { logger } from '../logger';
-import { Db } from '../db';
 import { ExpressApp } from '../../app';
 import { WebSocketApp } from '../socket';
 
@@ -9,11 +8,9 @@ import { WebSocketApp } from '../socket';
 export class AppServer {
   private server: Server;
   private expressApp: ExpressApp;
-  private db: Db;
   private websocketApp: WebSocketApp;
 
-  constructor( expressApp: ExpressApp, db: Db, websocketApp: WebSocketApp ) {
-    this.db = db;
+  constructor( expressApp: ExpressApp, websocketApp: WebSocketApp ) {
     this.expressApp = expressApp;
     this.websocketApp = websocketApp;
     this.server = createServer(this.expressApp.app);
@@ -25,7 +22,7 @@ export class AppServer {
 
   public start() {
     this.config();
-    this.db.connection.on('open', ( err ) => {
+    this.expressApp.db.connection.once('open', ( err ) => {
       if ( err ) {
         throw err;
       }
@@ -35,7 +32,6 @@ export class AppServer {
   }
 
   private config() {
-    this.db.init();
     this.expressApp.init();
     if ( config.socket.enable ) {
       this.websocketApp.init(this.server);

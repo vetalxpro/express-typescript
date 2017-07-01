@@ -1,0 +1,10 @@
+{
+  "BasicAuth": {
+    "type": "basic"
+  },
+  "JWTAuth": {
+    "type": "apiKey",
+    "in": "header",
+    "name": "Authorization"
+  }
+}

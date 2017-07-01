@@ -1,68 +1,141 @@
 import { Request, Response } from 'express';
-import { IUser, User } from '../../../../libs/db/models';
+import { RequestHandlerParams } from 'express-serve-static-core';
+import { pick } from 'lodash';
+import { User, defaultUserPickFields } from '../../../../libs/db/models';
 import { HttpError } from '../../../../libs/errors';
-import { sign } from 'jsonwebtoken';
-import { omit } from 'lodash';
-import { config } from '../../../../config';
-
 
 /**
- *
- * @param req
- * @param res
- * @param next
+ * @swagger
+ * /users/registration:
+ *   post:
+ *     summary: Local user registration
+ *     operationId: localRegister
+ *     tags:
+ *     - users
+ *     parameters:
+ *     - in: body
+ *       name: body
+ *       required: true
+ *       schema:
+ *         type: object
+ *         properties:
+ *           username:
+ *             type: string
+ *           email:
+ *             type: string
+ *           password:
+ *             type: string
+ *         example:
+ *           username: 'John'
+ *           email: 'john@gmail.com'
+ *           password: '123456'
+ *     responses:
+ *       201:
+ *         description: Created
+ *         example:
+ *           jwt: "dasdsadsas423asd34dsadasdqwe124dasddasdsa"
+ *           user:
+ *             username: John
+ *             email: john@gmail.com
+ *       403:
+ *         description: Forbidden
  */
-export const register = ( req: Request, res: Response, next ) => {
-  const newUser = {
-    local: {
+export const localRegister = (): RequestHandlerParams => {
+  const handler = ( req: Request, res: Response, next ) => {
+    const newUser = {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password
-    }
-  };
-  User.createUser(newUser)
-    .then(( user ) => {
-      res.status(201).json(user);
-    })
-    .catch(next);
-};
+    };
+    let createdUser;
 
-
-/**
- *
- * @param req
- * @param res
- * @param next
- * @returns {any}
- */
-export const login = ( req: Request, res: Response, next ) => {
-  const { email, password } = req.body;
-  if ( !email || !password ) {
-    return next(new HttpError(400, 'Empty email or password'));
-  }
-  User.findByEmail(email)
-    .select('+local.password')
-    .lean()
-    .then(( user: IUser ) => {
-      if ( !user ) {
-        return next(new HttpError(404, 'User not found'));
-      }
-      return User.checkPassword(password, user.local.password)
-        .then(( isMatch ) => {
-          if ( !isMatch ) {
-            return next(new HttpError(403, 'Incorrect Password'));
-          }
-          user.local = omit(user.local, [ 'password' ]);
-
-          sign(user, config.jwt.secret, config.jwt.options, ( err, token ) => {
-            if ( err ) {
-              return next(err);
-            }
+    User.findByEmail(newUser.email)
+      .then(( userDoc ) => {
+        if ( userDoc ) {
+          next(new HttpError(403, `Email ${newUser.email} is already registered`));
+          return null;
+        }
+        return User.createUser(newUser)
+          .then(( createdUserDoc ) => {
+            createdUser = createdUserDoc;
+            return User.generateJwt(createdUserDoc);
+          })
+          .then(( token ) => {
             return res.json({
               jwt: token,
-              user
+              user: pick(createdUser, defaultUserPickFields)
             });
           });
-        });
-    }).catch(next);
+      })
+      .catch(next);
+  };
+  return [
+    handler
+  ];
+};
+
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Local user login
+ *     operationId: localRegister
+ *     tags:
+ *     - users
+ *     parameters:
+ *     - in: body
+ *       name: body
+ *       required: true
+ *       schema:
+ *         type: object
+ *         properties:
+ *           email:
+ *             type: string
+ *           password:
+ *             type: string
+ *         example:
+ *           email: 'john@gmail.com'
+ *           password: '123456'
+ *     responses:
+ *       200:
+ *         description: OK
+ *         example:
+ *           jwt: "dasdsadsas423asd34dsadasdqwe124dasddasdsa"
+ *           user:
+ *             username: 'John'
+ *             email: 'john@gmail.com'
+ */
+export const localLogin = (): RequestHandlerParams => {
+  const handler = ( req: Request, res: Response, next ) => {
+    const { email, password } = req.body;
+    if ( !email || !password ) {
+      return next(new HttpError(400, 'Empty email or password'));
+    }
+    User.findByEmail(email)
+      .select('+password')
+      .then(( userDoc ) => {
+        if ( !userDoc ) {
+          return next(new HttpError(404, 'User not found'));
+        }
+        return User.checkPassword(password, userDoc.password)
+          .then(( isMatch ) => {
+            if ( !isMatch ) {
+              return next(new HttpError(403, 'Incorrect Password'));
+            }
+
+            return User.generateJwt(userDoc)
+              .then(( token ) => {
+                return res.json({
+                  jwt: token,
+                  user: pick(userDoc.toObject(), defaultUserPickFields)
+                });
+              });
+          });
+      })
+      .catch(next);
+  };
+
+  return [
+    handler
+  ];
 };

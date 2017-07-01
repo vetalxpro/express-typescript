@@ -1,0 +1,26 @@
+{
+  "required": [
+    "email",
+    "password"
+  ],
+  "properties": {
+    "_id": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    }
+  },
+  "example": {
+    "_id": "131231231",
+    "username": "John",
+    "email": "john@gmail.com",
+    "password": "123456"
+  }
+}
