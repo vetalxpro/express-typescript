@@ -1,0 +1,10 @@
+script.
+  var data = !{JSON.stringify(response || null)};
+  if ( window.opener ) {
+    window.opener.postMessage(data, '*');
+    setTimeout(function() {
+      window.close();
+    }, 50);
+  } else {
+    document.write(JSON.stringify(data));
+  }

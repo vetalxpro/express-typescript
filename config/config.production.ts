@@ -1,6 +1,5 @@
 const port = process.env.PORT || 3000;
 const host = 'http://example.com';
-const apiPath = '/api/v1';
 
 const config = {
   env: 'production',
@@ -9,15 +8,6 @@ const config = {
     host: host,
     callbackUrl: `${host}`,
     clientUrl: `${host}`
-  },
-  passport: {
-    googleAuthOptions: {
-      callbackURL: `${host}${apiPath}/users/login/google/callback`
-    },
-    facebookAuthOptions: {
-      callbackURL: `${host}${apiPath}/users/login/facebook/callback`
-    },
-    twitterAuthOptions: {}
   }
 };
 

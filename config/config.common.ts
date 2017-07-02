@@ -1,15 +1,18 @@
 const port = process.env.PORT || 3000;
 const host = `http://localhost`;
-const apiPath = '/api/v1';
 
 const config = {
   env: process.env.NODE_ENV || 'development',
   server: {
     port: port,
     host: host,
-    apiPath: apiPath,
     callbackUrl: `${host}:${port}`,
-    clientUrl: `${host}:4200` // angular 2 webpack-dev-server (example)
+    clientUrl: `${host}:4200`, // angular 2 webpack-dev-server (example)
+    contentLengthOptions: {
+      max: 10 * 1000 * 1000, // 10Mb
+      message: 'Invalid payload; too bigd.',
+      status: 400
+    }
   },
   mongoose: {
     host: 'mongodb://localhost/somebase',
@@ -66,23 +69,19 @@ const config = {
   passport: {
     googleAuthOptions: {
       clientID: '441428006509-34qjiv949e9f9h5bmbueuleqchjvto6m.apps.googleusercontent.com',
-      clientSecret: 'zgyIIPOkxtrgUGObwkt94Bc_',
-      callbackURL: `${host}:${port}${apiPath}/users/auth/google/callback`
+      clientSecret: 'zgyIIPOkxtrgUGObwkt94Bc_'
     },
     facebookAuthOptions: {
       clientID: '393451751013103',
-      clientSecret: 'cd441f83eb3c78a7cc2068ca3e6429ef',
-      callbackURL: `${host}:${port}${apiPath}/users/auth/facebook/callback`
+      clientSecret: 'cd441f83eb3c78a7cc2068ca3e6429ef'
     },
     twitterAuthOptions: {
       consumerKey: 'GQoeDIBuVHbYMpiA7llKsfnff',
-      consumerSecret: 'eNIo2euFs81Mv1cQTaEnS468E8s7wHYuFjPOwFBL3mhrWaypMB',
-      callbackURL: `${host}:${port}${apiPath}/users/auth/twitter/callback`
+      consumerSecret: 'eNIo2euFs81Mv1cQTaEnS468E8s7wHYuFjPOwFBL3mhrWaypMB'
     },
     vkontakteAuthOptions: {
       clientID: '6096996',
-      clientSecret: 'cDb8sX3nMnqpZ5Ll0l9P',
-      callbackURL: `${host}:${port}${apiPath}/users/auth/vkontakte/callback`
+      clientSecret: 'cDb8sX3nMnqpZ5Ll0l9P'
     }
   },
   socket: {

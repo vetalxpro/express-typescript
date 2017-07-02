@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
 import { HttpError } from '../../../../libs';
 import { User } from '../../../../libs/db/models';
-import { passportJwtAuth } from '../../../../libs/passport';
 import { checkObjectId } from '../../../../middleware';
+import { jwtAuth } from '../../../../libs/passport/middleware';
 
 /**
  * @swagger
@@ -49,7 +49,7 @@ export const deleteById = (): RequestHandlerParams => {
       .catch(next);
   };
   return [
-    passportJwtAuth,
+    jwtAuth,
     checkObjectId,
     handler
   ];

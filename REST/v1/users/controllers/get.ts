@@ -3,7 +3,7 @@ import { RequestHandlerParams } from 'express-serve-static-core';
 import { HttpError } from '../../../../libs';
 import { User } from '../../../../libs/db/models';
 import { checkAdmin, checkObjectId } from '../../../../middleware';
-import { passportJwtAuth } from '../../../../libs/passport';
+import { jwtAuth } from '../../../../libs/passport/middleware';
 
 
 /**
@@ -36,7 +36,7 @@ export const getAll = (): RequestHandlerParams => {
       .catch(next);
   };
   return [
-    passportJwtAuth,
+    jwtAuth,
     handler
   ];
 };
@@ -118,7 +118,7 @@ export const getProfile = (): RequestHandlerParams => {
       .catch(next);
   };
   return [
-    passportJwtAuth,
+    jwtAuth,
     handler
   ];
 };

@@ -1,9 +1,13 @@
-import { User } from '../db/models';
-import { config } from '../../config';
+import { User } from '../../db/models';
+import { config } from '../../../config';
 import { Strategy, IStrategyOption } from 'passport-twitter';
 
 
-const strategyOptions: IStrategyOption = config.passport.twitterAuthOptions;
+const strategyOptions: IStrategyOption = {
+  consumerKey: config.passport.twitterAuthOptions.consumerKey,
+  consumerSecret: config.passport.twitterAuthOptions.consumerSecret,
+  callbackURL: `${config.server.callbackUrl}/oauth/twitter/callback`
+};
 
 export const twitterStrategy = new Strategy(strategyOptions, ( accessToken, refreshToken, profile, done ) => {
     User.findOrCreate({ 'twitter.id': profile.id },
@@ -16,7 +20,7 @@ export const twitterStrategy = new Strategy(strategyOptions, ( accessToken, refr
         }
       })
       .then(( user ) => {
-        done(null, user.toObject());
+        done(null, user);
         return null;
       })
       .catch(done);

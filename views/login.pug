@@ -1,0 +1,21 @@
+extends layouts/layout
+block content
+  .container
+    h1= title
+    include partials/flash-messages
+    form(method="POST" action="/login")
+      .form-group
+        input(type="text" name="email" placeholder="email")
+      .form-group
+        input(type="password" name="password" placeholder="password")
+      .form-actions
+        button(type="submit") Submit
+        button(type="clear") Clear
+    .oauth
+      a(href="/oauth/google" target="_blank") Google
+      a(href="/oauth/facebook" target="_blank") Facebook
+      a(href="/oauth/twitter" target="_blank") Twitter
+      a(href="/oauth/vkontakte" target="_blank") Vkontakte
+  script(src="/socket.io/socket.io.js")
+  script(src="/assets/main.js")
+

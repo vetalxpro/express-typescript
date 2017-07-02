@@ -1,11 +1,10 @@
-import * as express from 'express';
 import { Router } from 'express';
-import { join } from 'path';
-import { apiSpecPath, swaggerUiDistPath } from './api-docs';
-import { dashboardPath, homePath } from './pages';
+import { pagesRouter } from './pages/pages-router';
+import { apiDocsRouter } from './api-docs/api-docs-router';
+import { authRouter } from './oauth/oauth-router';
 
 
-class PagesRouter {
+class Routes {
   private router = Router();
 
   public init() {
@@ -14,12 +13,10 @@ class PagesRouter {
   }
 
   private initRoutes() {
-    this.router.get('/', homePath);
-    this.router.get('/dashboard', dashboardPath);
-    this.router.use('/api-docs', express.static(join(__dirname, '../api-docs')));
-    this.router.use('/api-docs', express.static(swaggerUiDistPath()));
-    this.router.get('/api-docs/swagger.json', apiSpecPath);
+    this.router.use('/', pagesRouter.init());
+    this.router.use('/api-docs', apiDocsRouter.init());
+    this.router.use('/oauth', authRouter.init());
   }
 }
 
-export const pagesRouter = new PagesRouter().init();
+export const routes = new Routes();
