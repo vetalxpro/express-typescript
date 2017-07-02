@@ -9,7 +9,9 @@ class ApiV2 {
   }
 
   private initRoutes() {
-
+    this.router.get('/', ( req, res, next ) => {
+      res.send('please use /api/v1');
+    });
 
   }
 }

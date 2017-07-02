@@ -5,10 +5,12 @@ import { Request, Response } from 'express';
 import { validateMax } from 'express-content-length-validator';
 import * as session from 'express-session';
 import * as helmet from 'helmet';
+import * as hpp from 'hpp';
 import { merge } from 'lodash';
 import * as morgan from 'morgan';
 import { notify } from 'node-notifier';
 import { join } from 'path';
+import * as favicon from 'serve-favicon';
 
 import { config } from './config';
 import { logger, passport } from './libs';
@@ -32,7 +34,6 @@ export class ExpressApp {
 
   public init() {
     this.config();
-    this.db.init();
     this.initMiddlewares();
     this.initRest();
     this.initRoutes();
@@ -49,7 +50,7 @@ export class ExpressApp {
 
   private initMiddlewares() {
     this.app.use(morgan('dev'));
-    this.app.use(simpleLogger);
+    this.app.use(favicon(join(__dirname, './public/assets/favicon.ico')));
     this.app.use(validateMax(config.server.contentLengthOptions));
     this.app.use(helmet(config.helmetOptions));
     this.app.use(session(merge(true, config.sessionOptions, {
@@ -60,7 +61,9 @@ export class ExpressApp {
     this.app.use(express.static(join(__dirname, './public')));
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
+    this.app.use(hpp({ checkBody: false }));
     this.app.use(flash());
+    this.app.use(simpleLogger);
   }
 
   private initRest() {

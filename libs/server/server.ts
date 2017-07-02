@@ -22,13 +22,7 @@ export class AppServer {
 
   public start() {
     this.config();
-    this.expressApp.db.connection.once('open', ( err ) => {
-      if ( err ) {
-        throw err;
-      }
-      logger.info(`Mongoose connected to ${config.mongoose.host}`);
-      this.server.listen(config.server.port);
-    });
+    this.server.listen(config.server.port);
   }
 
   private config() {

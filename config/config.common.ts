@@ -10,7 +10,7 @@ const config = {
     clientUrl: `${host}:4200`, // angular 2 webpack-dev-server (example)
     contentLengthOptions: {
       max: 10 * 1000 * 1000, // 10Mb
-      message: 'Invalid payload; too bigd.',
+      message: 'Invalid payload; too big.',
       status: 400
     }
   },
