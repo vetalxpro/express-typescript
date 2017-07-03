@@ -1,5 +1,14 @@
+sudo: required
 language: node_js
 node_js:
   - "8"
 services: mongodb
 
+before_install:
+  - npm install -g node-gyp
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-5
