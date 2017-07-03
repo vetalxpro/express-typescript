@@ -62,7 +62,7 @@ export const localRegister = (): RequestHandler | RequestHandler[] => {
     }
     const user = await User.createUser({ username, email, password });
     const token = await user.generateJwt();
-    return res.json({
+    return res.status(201).json({
       jwt: token,
       user: pick(user, [ 'username', 'email' ])
     });

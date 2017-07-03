@@ -6,7 +6,7 @@ import { AppServer } from './libs/server';
 import { WebSocketApp } from './libs/socket';
 
 
-const db = new Db();
+export const db = new Db();
 db.init();
 
 export const appServer = new AppServer(new ExpressApp(db), new WebSocketApp());
