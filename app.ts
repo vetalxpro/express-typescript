@@ -13,8 +13,9 @@ import { join } from 'path';
 import * as favicon from 'serve-favicon';
 
 import { config } from './config';
-import { logger, passport } from './libs';
 import { Db } from './libs/db';
+import { logger } from './libs/logger';
+import { passport } from './libs/passport';
 import { simpleLogger, urlNotFound } from './middleware';
 import { restRoutes } from './REST';
 import { routes } from './routes';
@@ -83,11 +84,9 @@ export class ExpressApp {
         err.status = 400;
       }
       res.status(err.status || 500);
-      if ( err.status !== 500 ) {
-        logger.error(err.status, err.message);
-      } else {
-        logger.error(err);
-      }
+
+      logger.error(err.status, err);
+
       if ( req.app.get('env') === 'development' ) {
         res.locals.error = err;
         notify({

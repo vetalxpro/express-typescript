@@ -14,6 +14,7 @@ const authJwtOptions: AuthenticateOptions = {
  * @param next
  */
 export const jwtAuth = ( req: Request, res: Response, next ) => {
+
   authenticate('jwt', authJwtOptions, ( err, user, info ) => {
     if ( err ) {
       return next(err);

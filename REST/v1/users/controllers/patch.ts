@@ -1,32 +1,34 @@
-import { Request, Response } from 'express';
-import { RequestHandlerParams } from 'express-serve-static-core';
-import { HttpError } from '../../../../libs';
+import { Request, RequestHandler, Response } from 'express';
 import { User } from '../../../../libs/db/models';
+import { HttpError } from '../../../../libs/errors';
+import { wrapAsync } from '../../../../libs/utils';
 import { checkObjectId } from '../../../../middleware';
 
 /**
  *
- * @returns {[express.Handler]}
+ * @returns {RequestHandler|RequestHandler[]}
  */
-export const updateById = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
+export const updateById = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns {Promise<any>}
+   */
+  const handler = async ( req: Request, res: Response, next ) => {
     const id = req.params.id;
     const updatedUser = {
       username: req.body.username
     };
 
-    User.updateById(id, updatedUser)
-      .then(( user ) => {
-        if ( !user ) {
-          return next(new HttpError(404, 'User not found'));
-        }
-        return res.status(200).json(user);
-      })
-      .catch(next);
+    const user = await User.updateById(id, updatedUser);
+    if ( !user ) {
+      return next(new HttpError(404, 'User not found'));
+    }
+    return res.status(200).json(user);
+
   };
 
-  return [
-    checkObjectId,
-    handler
-  ];
+  return wrapAsync([ checkObjectId, handler ]);
 };

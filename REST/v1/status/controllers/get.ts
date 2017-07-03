@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, RequestHandler, Response } from 'express';
 
 
 /**
@@ -16,7 +16,13 @@ import { Request, Response } from 'express';
  *         schema:
  *           $ref: '#/definitions/Status'
  */
-export const getStatus = () => {
+export const getStatus = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @returns {Response}
+   */
   const handler = ( req: Request, res: Response ) => {
     const time = new Date();
 
@@ -27,7 +33,6 @@ export const getStatus = () => {
       currentTime: time
     });
   };
-  return [
-    handler
-  ];
+
+  return [ handler ];
 };

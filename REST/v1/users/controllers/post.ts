@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { RequestHandlerParams } from 'express-serve-static-core';
+import { Request, RequestHandler, Response } from 'express';
 import { pick } from 'lodash';
-import { User, defaultUserPickFields } from '../../../../libs/db/models';
+import { User } from '../../../../libs/db/models';
 import { HttpError } from '../../../../libs/errors';
+import { wrapAsync } from '../../../../libs/utils';
 
 /**
  * @swagger
@@ -40,38 +40,36 @@ import { HttpError } from '../../../../libs/errors';
  *       403:
  *         description: Forbidden
  */
-export const localRegister = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
-    const newUser = {
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password
-    };
-    let createdUser;
 
-    User.findByEmail(newUser.email)
-      .then(( userDoc ) => {
-        if ( userDoc ) {
-          next(new HttpError(403, `Email ${newUser.email} is already registered`));
-          return null;
-        }
-        return User.createUser(newUser)
-          .then(( createdUserDoc ) => {
-            createdUser = createdUserDoc;
-            return User.generateJwt(createdUserDoc);
-          })
-          .then(( token ) => {
-            return res.json({
-              jwt: token,
-              user: pick(createdUser, defaultUserPickFields)
-            });
-          });
-      })
-      .catch(next);
+/**
+ *
+ * @returns {RequestHandler|RequestHandler[]}
+ */
+export const localRegister = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns {Promise<any>}
+   */
+  const handler = async ( req: Request, res: Response, next ) => {
+    const { username, email, password } = req.body;
+
+    const emailExists = await User.findByEmail(email);
+    if ( emailExists ) {
+      return next(new HttpError(403, `Email ${email} is already registered`));
+    }
+    const user = await User.createUser({ username, email, password });
+    const token = await user.generateJwt();
+    return res.json({
+      jwt: token,
+      user: pick(user, [ 'username', 'email' ])
+    });
+
   };
-  return [
-    handler
-  ];
+
+  return wrapAsync([ handler ]);
 };
 
 /**
@@ -105,37 +103,39 @@ export const localRegister = (): RequestHandlerParams => {
  *             username: 'John'
  *             email: 'john@gmail.com'
  */
-export const localLogin = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
+
+/**
+ *
+ * @returns {RequestHandler|RequestHandler[]}
+ */
+export const localLogin = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns {Promise<any>}
+   */
+  const handler = async ( req: Request, res: Response, next ) => {
     const { email, password } = req.body;
     if ( !email || !password ) {
       return next(new HttpError(400, 'Empty email or password'));
     }
-    User.findByEmail(email)
-      .select('+password')
-      .then(( userDoc ) => {
-        if ( !userDoc ) {
-          return next(new HttpError(404, 'User not found'));
-        }
-        return User.checkPassword(password, userDoc.password)
-          .then(( isMatch ) => {
-            if ( !isMatch ) {
-              return next(new HttpError(403, 'Incorrect Password'));
-            }
 
-            return User.generateJwt(userDoc)
-              .then(( token ) => {
-                return res.json({
-                  jwt: token,
-                  user: pick(userDoc.toObject(), defaultUserPickFields)
-                });
-              });
-          });
-      })
-      .catch(next);
+    const user = await User.findByEmail(email).select('+password');
+    if ( !user ) {
+      return next(new HttpError(404, 'User not found'));
+    }
+    const passwordsMatch = await user.checkPassword(password);
+    if ( !passwordsMatch ) {
+      return next(new HttpError(403, 'Incorrect Password'));
+    }
+    const token = await user.generateJwt();
+    return res.json({
+      jwt: token,
+      user: pick(user, [ 'username', 'email' ])
+    });
   };
 
-  return [
-    handler
-  ];
+  return wrapAsync([ handler ]);
 };

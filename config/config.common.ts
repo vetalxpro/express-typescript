@@ -17,7 +17,7 @@ const config = {
   mongoose: {
     host: 'mongodb://localhost/somebase',
     options: {
-      useMongoClient: false
+      useMongoClient: true
     }
   },
   jwt: {

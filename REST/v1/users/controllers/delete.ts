@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
-import { RequestHandlerParams } from 'express-serve-static-core';
-import { HttpError } from '../../../../libs';
+import { Request, RequestHandler, Response } from 'express';
 import { User } from '../../../../libs/db/models';
-import { checkObjectId } from '../../../../middleware';
+import { HttpError } from '../../../../libs/errors';
 import { jwtAuth } from '../../../../libs/passport/middleware';
+import { wrapAsync } from '../../../../libs/utils';
+import { checkObjectId } from '../../../../middleware';
+
 
 /**
  * @swagger
@@ -34,23 +35,31 @@ import { jwtAuth } from '../../../../libs/passport/middleware';
  *       404:
  *         "$ref": "#/responses/NotFound"
  */
-export const deleteById = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
+
+/**
+ *
+ * @returns {RequestHandler|RequestHandler[]}
+ */
+export const deleteById = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns {Promise<any>}
+   */
+  const handler = async ( req: Request, res: Response, next ) => {
     const id = req.params.id;
-    User.removeById(id)
-      .then(( user ) => {
-        if ( !user ) {
-          return next(new HttpError(404, 'User not found'));
-        }
-        return res.status(200).json({
-          status: 'OK'
-        });
-      })
-      .catch(next);
+    const result = await User.removeById(id);
+
+    if ( !result ) {
+      return next(new HttpError(404, 'User not found'));
+    }
+    return res.status(200).json({
+      status: 'OK'
+    });
+
   };
-  return [
-    jwtAuth,
-    checkObjectId,
-    handler
-  ];
+
+  return wrapAsync([ jwtAuth, checkObjectId, handler ]);
 };

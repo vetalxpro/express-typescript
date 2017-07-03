@@ -1,43 +1,39 @@
-import { RequestHandlerParams } from 'express-serve-static-core';
 import { authenticate } from 'passport';
+import { RequestHandler } from 'express';
 
 
 /**
  *
  * @returns {[express.Handler]}
  */
-export const oauthGoogle = (): RequestHandlerParams => {
-  return [
-    authenticate('google', { scope: [ 'profile', 'email' ] })
-  ];
+export const oauthGoogle = (): RequestHandler => {
+
+  return authenticate('google', { scope: [ 'profile', 'email' ] });
 };
 
 /**
  *
  * @returns {[express.Handler]}
  */
-export const oauthFacebook = (): RequestHandlerParams => {
-  return [
-    authenticate('facebook', { scope: [ 'public_profile', 'email' ] })
-  ];
+export const oauthFacebook = (): RequestHandler => {
+
+  return authenticate('facebook', { scope: [ 'public_profile', 'email' ] });
 };
 
 /**
  *
  * @returns {[express.Handler]}
  */
-export const oauthTwitter = (): RequestHandlerParams => {
-  return [
-    authenticate('twitter')
-  ];
+export const oauthTwitter = (): RequestHandler => {
+
+  return authenticate('twitter');
 };
 
 /**
  *
  * @returns {[express.Handler]}
  */
-export const oauthVkontakte = (): RequestHandlerParams => {
-  return [
-    authenticate('vkontakte')
-  ];
+export const oauthVkontakte = (): RequestHandler => {
+
+  return authenticate('vkontakte');
 };

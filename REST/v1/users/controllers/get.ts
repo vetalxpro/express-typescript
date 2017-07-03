@@ -1,10 +1,9 @@
-import { Request, Response } from 'express';
-import { RequestHandlerParams } from 'express-serve-static-core';
-import { HttpError } from '../../../../libs';
+import { Request, RequestHandler, Response } from 'express';
 import { User } from '../../../../libs/db/models';
-import { checkAdmin, checkObjectId } from '../../../../middleware';
+import { HttpError } from '../../../../libs/errors';
 import { jwtAuth } from '../../../../libs/passport/middleware';
-
+import { wrapAsync } from '../../../../libs/utils';
+import { checkObjectId } from '../../../../middleware';
 
 /**
  * @swagger
@@ -27,18 +26,24 @@ import { jwtAuth } from '../../../../libs/passport/middleware';
  *       401:
  *         $ref: '#/responses/Unauthorized'
  */
-export const getAll = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
-    User.findAll()
-      .then(( users ) => {
-        return res.json(users);
-      })
-      .catch(next);
+
+/**
+ *
+ * @returns {RequestHandler|RequestHandler[]}
+ */
+export const getAll = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @returns {Promise<Response>}
+   */
+  const handler = async ( req: Request, res: Response ) => {
+    const users = await User.findAll();
+    return res.json(users);
   };
-  return [
-    jwtAuth,
-    handler
-  ];
+
+  return wrapAsync([ jwtAuth, handler ]);
 };
 
 /**
@@ -65,23 +70,29 @@ export const getAll = (): RequestHandlerParams => {
  *       404:
  *         $ref: '#/responses/NotFound'
  */
-export const getById = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
+
+/**
+ *
+ * @returns {RequestHandler|RequestHandler[]}
+ */
+export const getById = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns {Promise<any>}
+   */
+  const handler = async ( req: Request, res: Response, next ) => {
     const id = req.params.id;
-    User.findById(id)
-      .then(( user ) => {
-        if ( !user ) {
-          return next(new HttpError(404, 'User not found'));
-        }
-        return res.json(user);
-      })
-      .catch(next);
+    const user = await User.findById(id);
+    if ( !user ) {
+      return next(new HttpError(404, 'User not found'));
+    }
+    return res.json(user);
   };
-  return [
-    checkAdmin,
-    checkObjectId,
-    handler
-  ];
+
+  return wrapAsync([ jwtAuth, checkObjectId, handler ]);
 };
 
 /**
@@ -105,20 +116,27 @@ export const getById = (): RequestHandlerParams => {
  *       404:
  *         $ref: '#/responses/NotFound'
  */
-export const getProfile = (): RequestHandlerParams => {
-  const handler = ( req: Request, res: Response, next ) => {
+
+/**
+ *
+ * @returns {RequestHandler|RequestHandler[]}
+ */
+export const getProfile = (): RequestHandler | RequestHandler[] => {
+  /**
+   *
+   * @param req
+   * @param res
+   * @param next
+   * @returns {Promise<any>}
+   */
+  const handler = async ( req: Request, res: Response, next ) => {
     const id = req.user._id;
-    User.findById(id)
-      .then(( user ) => {
-        if ( !user ) {
-          return next(new HttpError(404, 'User not found'));
-        }
-        return res.json(user);
-      })
-      .catch(next);
+    const user = await User.findById(id);
+    if ( !user ) {
+      return next(new HttpError(404, 'User not found'));
+    }
+    return res.json(user);
   };
-  return [
-    jwtAuth,
-    handler
-  ];
+
+  return wrapAsync([ jwtAuth, handler ]);
 };

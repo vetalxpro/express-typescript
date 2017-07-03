@@ -7,24 +7,25 @@ const strategyOptions: IStrategyOptions = {
   passwordField: 'password'
 };
 
-export const localStrategy = new Strategy(strategyOptions, ( email, password, done ) => {
-    User.findByEmail(email)
-      .select('+password')
-      .then(( user ) => {
-        if ( !user ) {
-          done(null, false, { message: 'User not found' });
-          return null;
-        }
-        return User.checkPassword(password, user.password)
-          .then(( isMatch ) => {
-            if ( !isMatch ) {
-              done(null, false, { message: 'Invalid password' });
-              return null;
-            }
-            done(null, user);
-            return null;
-          });
-      })
-      .catch(done);
+/**
+ *
+ * @type {Strategy}
+ */
+export const localStrategy = new Strategy(strategyOptions, async ( email, password, done ) => {
+
+    try {
+      const user = await User.findByEmail(email).select('+password');
+      if ( !user ) {
+        return done(null, false, { message: 'User not found' });
+      }
+      const passwordsMatch = await user.checkPassword(password);
+      if ( !passwordsMatch ) {
+        return done(null, false, { message: 'Invalid password' });
+      }
+      return done(null, user);
+
+    } catch ( err ) {
+      done(err);
+    }
   }
 );

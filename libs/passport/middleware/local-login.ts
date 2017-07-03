@@ -14,4 +14,4 @@ const authOptions: AuthenticateOptions = {
  *
  *
  */
-export const localAuth = authenticate('local', authOptions);
+export const localAuth = () => authenticate('local', authOptions);

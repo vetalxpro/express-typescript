@@ -10,7 +10,7 @@ class PagesRouter {
   }
 
   private initRoutes() {
-    this.router.get('/', controllers.showHomePage());
+    this.router.get('/', controllers.showIndexPage());
     this.router.get('/dashboard', controllers.showDashboardPage());
     this.router.get('/login', controllers.showLoginPage());
     this.router.post('/login', controllers.postLogin());

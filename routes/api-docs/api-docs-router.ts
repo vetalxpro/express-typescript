@@ -4,7 +4,11 @@ import { join } from 'path';
 import * as swaggerUiDistPath from 'swagger-ui-dist/absolute-path';
 import { swaggerSpec } from '../../libs/swagger-jsdoc';
 
-
+/**
+ *
+ * @param req
+ * @param res
+ */
 const apiSpecHandler = ( req: Request, res: Response ) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);

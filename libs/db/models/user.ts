@@ -40,7 +40,12 @@ export interface IUser {
   createdAt?: Date;
 }
 
-interface IUserDocument extends IUser, Document {
+interface IUserMethods {
+  checkPassword?: ( plainPassword: string ) => Promise<boolean>;
+  generateJwt?: () => Bluebird<string>;
+}
+
+export interface IUserDocument extends IUser, IUserMethods, Document {
   _id: string;
 }
 
@@ -96,19 +101,44 @@ const userSchema: Schema = new Schema(
     timestamps: true
   }
 );
+/**
+ * Schema Hooks
+ */
+userSchema.pre('save', async function( next ) {
 
-userSchema.pre('save', function( next ) {
-  const user = this as IUserDocument;
-  if ( !user.password ) {
-    return next();
-  }
-  hash(user.password, 10)
-    .then(( hash ) => {
-      user.password = hash;
+  try {
+    const user = this as IUserDocument;
+    if ( !user.password ) {
       return next();
-    })
-    .catch(next);
+    }
+
+    user.password = await hash(user.password, 10);
+    return next();
+
+  } catch ( err ) {
+    next(err);
+  }
 });
+
+/**
+ *
+ * Schema Methods
+ */
+userSchema.methods = {
+
+  checkPassword( plainPassword: string ): Promise<boolean> {
+
+    return compare(plainPassword, this.password);
+  },
+
+  generateJwt(): Bluebird<string> {
+
+    const user = this as IUserDocument;
+    return Bluebird.fromCallback(( callback ) => {
+      return sign({ id: user._id }, config.jwt.secret, config.jwt.options, callback);
+    });
+  }
+};
 
 const UserModel = model<IUserDocument>('User', userSchema);
 
@@ -119,7 +149,7 @@ export class User {
   }
 
   public static createUser( user: IUser ) {
-    return new UserModel(user).save();
+    return UserModel.create(user);
   }
 
   public static findById( id: string ) {
@@ -142,24 +172,12 @@ export class User {
     return UserModel.findByIdAndRemove(id);
   }
 
-  public static checkPassword( plain: string, hash: string ): Promise<boolean> {
-    return compare(plain, hash);
-  }
-
-  public static findOrCreate( query: IUser | any, update: IUser ) {
-    return UserModel.findOne(query)
-      .then(( user ) => {
-        if ( user ) {
-          return user;
-        }
-        return new UserModel(update).save();
-      });
-  }
-
-  public static generateJwt( user: IUser ): Bluebird<string> {
-    return Bluebird.fromCallback(( callback ) => {
-      return sign({ id: user._id }, config.jwt.secret, config.jwt.options, callback);
-    });
+  public static async findOrCreate( query: object, update: IUser ) {
+    const user = await UserModel.findOne(query);
+    if ( user ) {
+      return user;
+    }
+    return UserModel.create(update);
   }
 
   private user: IUserDocument;
@@ -173,5 +191,3 @@ export class User {
   }
 
 }
-
-export const defaultUserPickFields = [ 'username', 'email' ];

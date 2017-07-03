@@ -1,5 +1,13 @@
+import { Request, Response } from 'express';
 import { HttpError } from '../libs/errors';
 
-export const urlNotFound = ( req, res, next ) => {
-  next(new HttpError(404));
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @returns {any}
+ */
+export const urlNotFound = ( req: Request, res: Response, next ) => {
+  return next(new HttpError(404));
 };

@@ -1,8 +1,9 @@
 import { ExpressApp } from './app';
 import { config } from './config';
-import { AppServer, WebSocketApp } from './libs';
 import { Db } from './libs/db';
 import { logger } from './libs/logger';
+import { AppServer } from './libs/server';
+import { WebSocketApp } from './libs/socket';
 
 
 const db = new Db();

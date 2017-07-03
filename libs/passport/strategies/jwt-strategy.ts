@@ -12,16 +12,16 @@ const strategyOptions: StrategyOptions = {
  *
  * @type {Strategy}
  */
-export const jwtStrategy = new Strategy(strategyOptions, ( decodedToken, done ) => {
-  User.findById(decodedToken.id)
-    .select('+role')
-    .then(( user ) => {
-      if ( !user ) {
-        done(null, false, { message: 'User not found' });
-        return null;
-      }
-      done(null, user);
-      return null;
-    })
-    .catch(done);
+export const jwtStrategy = new Strategy(strategyOptions, async ( decodedToken, done ) => {
+
+  try {
+    const user = await User.findById(decodedToken.id);
+    if ( !user ) {
+      return done(null, false, { message: 'User not found' });
+    }
+    return done(null, user);
+
+  } catch ( err ) {
+    done(err);
+  }
 });
