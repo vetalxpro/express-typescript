@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha --timeout 15000 --compilers ts:ts-node/register --require test/env.ts **/*.spec.ts",
     "start": "ts-node index.ts",
-    "server-watch": "nodemon index.ts"
+    "server-watch": "nodemon index.ts",
+    "seed": "ts-node run-scripts/seed.ts"
   },
   "author": "vetalxpro",
   "license": "ISC",

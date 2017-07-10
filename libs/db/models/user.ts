@@ -104,7 +104,7 @@ const userSchema: Schema = new Schema(
 /**
  * Schema Hooks
  */
-userSchema.pre('save', async function( next ) {
+userSchema.pre('save', async function ( next ) {
 
   try {
     const user = this as IUserDocument;
@@ -170,6 +170,10 @@ export class User {
 
   public static removeById( id: string ) {
     return UserModel.findByIdAndRemove(id);
+  }
+
+  public static findOneByQuery( query: object ) {
+    return UserModel.findOne(query);
   }
 
   public static async findOrCreate( query: object, update: IUser ) {
