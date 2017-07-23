@@ -24,13 +24,12 @@ export const getStatus = (): RequestHandler | RequestHandler[] => {
    * @returns {Response}
    */
   const handler = ( req: Request, res: Response ) => {
-    const time = new Date();
-
+    const time = Date.now();
     return res.json({
       status: 'OK',
-      started: new Date(req.app.locals.startTime),
-      uptime: (time as any - req.app.locals.startTime) / 1000,
-      currentTime: time
+      started: new Date(req.app.locals.startTime).toString(),
+      uptime: (time - req.app.locals.startTime) / 1000,
+      currentTime: new Date(time).toString()
     });
   };
 

@@ -89,11 +89,11 @@ export class ExpressApp {
 
       if ( req.app.get('env') === 'development' ) {
         res.locals.error = err;
-        notify({
+        /*notify({
           title: err.status,
           message: err.message,
           sound: true
-        });
+        });*/
       } else {
         res.locals.error = {};
       }

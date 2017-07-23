@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --timeout 15000 --compilers ts:ts-node/register --require test/env.ts **/*.spec.ts",
-    "start": "ts-node index.ts",
+    "start": "ts-node cluster.ts",
     "server-watch": "nodemon index.ts"
   },
   "author": "vetalxpro",
