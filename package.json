@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --timeout 15000 --compilers ts:ts-node/register --require test/env.ts **/*.spec.ts",
-    "start": "ts-node cluster.ts",
+    "start": "cross-env NODE_ENV=production ts-node index.ts",
+    "start-cluster": "cross-env NODE_ENV=production ts-node cluster.ts",
     "server-watch": "nodemon index.ts"
   },
   "author": "vetalxpro",
@@ -60,6 +61,7 @@
     "connect-flash": "^0.1.1",
     "connect-mongo": "^1.3.2",
     "cors": "^2.8.3",
+    "cross-env": "^5.0.1",
     "express": "^4.15.3",
     "express-content-length-validator": "^1.0.0",
     "express-session": "^1.15.3",
